@@ -125,6 +125,12 @@ namespace Content.Shared.Chemistry.Reagent
         [DataField]
         public bool WorksOnTheDead;
 
+        /// <summary>
+        /// Shitmed Change: Should this reagent work on the dead?
+        /// </summary>
+        [DataField]
+        public bool MetabolizeOnDead;
+
         [DataField(serverOnly: true)]
         public FrozenDictionary<ProtoId<MetabolismGroupPrototype>, ReagentEffectsEntry>? Metabolisms;
 
@@ -232,6 +238,13 @@ namespace Content.Shared.Chemistry.Reagent
         [JsonPropertyName("effects")]
         [DataField("effects", required: true)]
         public EntityEffect[] Effects = default!;
+
+        /// <summary>
+        ///     Shitmed Change: Whether or not this effect should work on dead entities. More granular version of WorksOnTheDead.
+        /// </summary>
+        [JsonPropertyName("worksOnTheDead")]
+        [DataField("worksOnTheDead")]
+        public bool WorksOnTheDead = true;
 
         public ReagentEffectsGuideEntry MakeGuideEntry(IPrototypeManager prototype, IEntitySystemManager entSys)
         {

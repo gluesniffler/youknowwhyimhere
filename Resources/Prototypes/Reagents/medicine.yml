@@ -191,6 +191,33 @@
               Toxin: -4
 
 - type: reagent
+  id: Formaldehyde
+  name: reagent-name-formaldehyde
+  group: Medicine
+  desc: reagent-desc-formaldehyde
+  physicalDesc: reagent-physical-desc-strong-smelling
+  flavor: medicine
+  color: "#b4004b"
+  worksOnTheDead: true
+  metabolisms:
+    Medicine:
+      effects:
+      - !type:GenericStatusEffect
+        key: PreventRotting
+        component: AntiRot
+        conditions:
+        - !type:ReagentThreshold
+          min: 1 # Very small so that you can administer it with as little as a dropper.
+    Poison:
+      worksOnTheDead: false
+      metabolismRate: 0.1
+      effects:
+      - !type:HealthChange
+        damage:
+          types:
+            Poison: 1
+
+- type: reagent
   id: Doxarubixadone
   name: reagent-name-doxarubixadone
   group: Medicine

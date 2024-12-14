@@ -1059,6 +1059,25 @@ public partial class SharedBodySystem
             return slotName;
     }
 
+    public IEnumerable<(EntityUid Id, OrganComponent Component)> GetBodyOrgans(
+        EntityUid bodyId,
+        BodyComponent? body = null)
+    {
+        if (!Resolve(bodyId, ref body, logMissing: false))
+            yield break;
+
+        var rootPart = GetRootPartOrNull(bodyId, body);
+        if (rootPart is null)
+            yield break;
+
+        foreach (var (partId, part) in GetBodyPartChildren(rootPart.Value.Entity, rootPart.Value.BodyPart))
+        {
+            // For each part, get its organs
+            foreach (var organ in GetPartOrgans(partId, part))
+                yield return organ;
+        }
+    }
+
     // Shitmed Change End
 
     /// <summary>

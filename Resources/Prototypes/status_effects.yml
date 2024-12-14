@@ -73,3 +73,7 @@
 - type: statusEffect
   id: Adrenaline
   alert: Adrenaline
+
+- type: statusEffect
+  id: PreventRotting
+  alwaysAllowed: true # Shitmed: Used to allow for any animal to be balmed.

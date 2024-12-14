@@ -7,6 +7,12 @@ using Content.Shared.Rejuvenate;
 using Robust.Shared.Containers;
 using Robust.Shared.Timing;
 
+// Shitmed Change
+using Content.Shared.Body.Components;
+using Content.Shared.Body.Events;
+using Content.Shared.Body.Organ;
+using Content.Shared.Body.Systems;
+
 namespace Content.Shared.Atmos.Rotting;
 
 public abstract class SharedRottingSystem : EntitySystem
@@ -15,6 +21,7 @@ public abstract class SharedRottingSystem : EntitySystem
     [Dependency] private readonly SharedContainerSystem _container = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
 
+    [Dependency] private readonly SharedBodySystem _bodySystem = default!;
     public const int MaxStages = 3;
 
     public override void Initialize()
@@ -23,8 +30,8 @@ public abstract class SharedRottingSystem : EntitySystem
 
         SubscribeLocalEvent<PerishableComponent, MapInitEvent>(OnPerishableMapInit);
         SubscribeLocalEvent<PerishableComponent, MobStateChangedEvent>(OnMobStateChanged);
+        SubscribeLocalEvent<PerishableComponent, OrganAddedToBodyEvent>(OnOrganAddedToBody);
         SubscribeLocalEvent<PerishableComponent, ExaminedEvent>(OnPerishableExamined);
-
         SubscribeLocalEvent<RottingComponent, ComponentShutdown>(OnShutdown);
         SubscribeLocalEvent<RottingComponent, MobStateChangedEvent>(OnRottingMobStateChanged);
         SubscribeLocalEvent<RottingComponent, RejuvenateEvent>(OnRejuvenate);
@@ -46,7 +53,31 @@ public abstract class SharedRottingSystem : EntitySystem
 
         component.RotAccumulator = TimeSpan.Zero;
         component.RotNextUpdate = _timing.CurTime + component.PerishUpdateRate;
+
+    // Shitmed Change Start
+        if (HasComp<BodyComponent>(uid))
+        {
+            foreach (var (id, organ) in _bodySystem.GetBodyOrgans(uid))
+            {
+                if (HasComp<RottingComponent>(id)
+                    || !TryComp<PerishableComponent>(id, out var perishable))
+                    continue;
+
+                perishable.RotAccumulator = TimeSpan.Zero;
+                perishable.RotNextUpdate = _timing.CurTime + perishable.PerishUpdateRate;
+            }
+        }
     }
+
+    private void OnOrganAddedToBody(EntityUid uid, PerishableComponent component, ref OrganAddedToBodyEvent args)
+    {
+        if (HasComp<RottingComponent>(uid))
+            return;
+
+        component.RotAccumulator = TimeSpan.Zero;
+        component.RotNextUpdate = _timing.CurTime + component.PerishUpdateRate;
+    }
+    // Shitmed Change End
 
     private void OnPerishableExamined(Entity<PerishableComponent> perishable, ref ExaminedEvent args)
     {
@@ -109,7 +140,7 @@ public abstract class SharedRottingSystem : EntitySystem
         return (int)(1 + maxStages * perishable.Comp.RotAccumulator.TotalSeconds / perishable.Comp.RotAfter.TotalSeconds);
     }
 
-    public bool IsRotProgressing(EntityUid uid, PerishableComponent? perishable)
+    public bool IsRotProgressing(EntityUid uid, PerishableComponent? perishable = null)
     {
         // things don't perish by default.
         if (!Resolve(uid, ref perishable, false))
@@ -119,8 +150,17 @@ public abstract class SharedRottingSystem : EntitySystem
         if (perishable.ForceRotProgression)
             return true;
 
+        if (HasComp<AntiRotComponent>(uid))
+            return false;
+
         // only dead things or inanimate objects can rot
         if (TryComp<MobStateComponent>(uid, out var mobState) && !_mobState.IsDead(uid, mobState))
+            return false;
+
+        // Shitmed Change: Or organs that are out in the open, or on a dead entity
+        if (TryComp<OrganComponent>(uid, out var organ)
+            && organ.Body is not null
+            && !IsRotProgressing(organ.Body.Value))
             return false;
 
         if (_container.TryGetOuterContainer(uid, Transform(uid), out var container) &&

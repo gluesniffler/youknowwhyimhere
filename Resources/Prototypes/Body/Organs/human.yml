@@ -34,6 +34,8 @@
   abstract: true
   components:
   - type: Gibbable
+  - type: Perishable
+    rotAfter: 30
   - type: PhysicalComposition #Goobstation - Recycle update
     materialComposition:
       Biomass: 5

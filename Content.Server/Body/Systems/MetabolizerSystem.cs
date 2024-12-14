@@ -189,8 +189,12 @@ namespace Content.Server.Body.Systems
                     // still remove reagents
                     if (TryComp<MobStateComponent>(solutionEntityUid.Value, out var state))
                     {
-                        if (!proto.WorksOnTheDead && _mobStateSystem.IsDead(solutionEntityUid.Value, state))
+                        if ((!proto.WorksOnTheDead
+                            || !entry.WorksOnTheDead)
+                            && _mobStateSystem.IsDead(solutionEntityUid.Value, state))
+                        {
                             continue;
+                        }
                     }
 
                     var actualEntity = ent.Comp2?.Body ?? solutionEntityUid.Value;
@@ -219,7 +223,11 @@ namespace Content.Server.Body.Systems
                 }
 
                 // remove a certain amount of reagent
-                if (mostToRemove > FixedPoint2.Zero)
+                if (mostToRemove > FixedPoint2.Zero
+                    // Shitmed Change
+                    && (!TryComp<MobStateComponent>(solutionEntityUid.Value, out var bodyState)
+                        || !_mobStateSystem.IsDead(solutionEntityUid.Value, bodyState)
+                        || proto.MetabolizeOnDead))
                 {
                     solution.RemoveReagent(reagent, mostToRemove);
 
