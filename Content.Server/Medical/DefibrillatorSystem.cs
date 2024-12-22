@@ -25,6 +25,11 @@ using Robust.Shared.Audio.Systems;
 using Robust.Shared.Player;
 using Robust.Shared.Timing;
 
+// Shitmed Change
+using Robust.Shared.Prototypes;
+using Content.Shared.Damage.Prototypes;
+using Content.Shared.FixedPoint;
+
 namespace Content.Server.Medical;
 
 /// <summary>
@@ -47,6 +52,7 @@ public sealed class DefibrillatorSystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedMindSystem _mind = default!;
+    [Dependency] private readonly IPrototypeManager _prototypes = default!; // Shitmed Change
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -147,7 +153,7 @@ public sealed class DefibrillatorSystem : EntitySystem
         ICommonSession? session = null;
 
         var dead = true;
-        if (_rotting.IsRotten(target))
+        if (_rotting.IsRotten(target, checkOrgans: true)) // Shitmed Change
         {
             _chatManager.TrySendInGameICMessage(uid, Loc.GetString("defibrillator-rotten"),
                 InGameICChatType.Speak, true);
@@ -164,8 +170,9 @@ public sealed class DefibrillatorSystem : EntitySystem
 
             if (_mobThreshold.TryGetThresholdForState(target, MobState.Dead, out var threshold) &&
                 TryComp<DamageableComponent>(target, out var damageableComponent) &&
-                damageableComponent.TotalDamage < threshold)
+                IsUnderThreshold(damageableComponent, threshold.Value, out var diff)) // Shitmed Change
             {
+                _damageable.TryChangeDamage(target, diff, true, damageable: damageableComponent, origin: uid); // Shitmed Change
                 _mobState.ChangeMobState(target, MobState.Critical, mob, uid);
                 dead = false;
             }
@@ -216,4 +223,21 @@ public sealed class DefibrillatorSystem : EntitySystem
             defib.NextZapTime = null;
         }
     }
+
+    // Shitmed Change Start
+    private bool IsUnderThreshold(DamageableComponent damageable, FixedPoint2 threshold, out DamageSpecifier diff)
+    {
+        string[] types = { "Poison", "Asphyxiation" };
+        diff = new DamageSpecifier();
+        foreach (var type in types)
+        {
+            if (damageable.Damage.DamageDict.TryGetValue(type, out var value) && value > threshold)
+            {
+                diff.DamageDict[type] = threshold - value - threshold * 0.10; // Heals them to under 10% of the threshold.
+            }
+        }
+
+        return damageable.TotalDamage + diff.GetTotal() < threshold;
+    }
+    // Shitmed Change End
 }

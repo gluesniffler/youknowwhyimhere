@@ -8,6 +8,7 @@ using Robust.Shared.Containers;
 using Robust.Shared.Timing;
 
 // Shitmed Change
+using Content.Shared._Shitmed.Body.Organ;
 using Content.Shared.Body.Components;
 using Content.Shared.Body.Events;
 using Content.Shared.Body.Organ;
@@ -175,8 +176,22 @@ public abstract class SharedRottingSystem : EntitySystem
         return !ev.Handled;
     }
 
-    public bool IsRotten(EntityUid uid, RottingComponent? rotting = null)
+    public bool IsRotten(EntityUid uid, RottingComponent? rotting = null, bool checkOrgans = false)
     {
+        // Shitmed Change Start
+        if (checkOrgans && TryComp(uid, out BodyComponent? body))
+        {
+            if (_bodySystem.TryGetBodyOrganEntityComps<HeartComponent>((uid, body), out var hearts))
+            {
+                foreach (var (heartUid, heart, organ) in hearts)
+                {
+                    if (HasComp<RottingComponent>(heartUid))
+                        return true;
+                }
+            }
+        }
+        // Shitmed Change End
+
         return Resolve(uid, ref rotting, false);
     }
 
