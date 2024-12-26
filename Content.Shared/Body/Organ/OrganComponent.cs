@@ -11,7 +11,7 @@ using Content.Shared._Shitmed.Body.Organ;
 namespace Content.Shared.Body.Organ;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(SharedBodySystem))]
+[Access(typeof(SharedBodySystem), typeof(SharedSurgerySystem))] // Shitmed Change
 public sealed partial class OrganComponent : Component, ISurgeryToolComponent // Shitmed Change
 {
     /// <summary>
@@ -56,7 +56,7 @@ public sealed partial class OrganComponent : Component, ISurgeryToolComponent //
     public ComponentRegistry? OnAdd;
 
     /// <summary>
-    ///     When removed, the organ will ensure these components on the entity, and add them on removal.
+    ///     When removed, the organ will ensure these components on the entity, and delete them on insertion.
     /// </summary>
     [DataField]
     public ComponentRegistry? OnRemove;
