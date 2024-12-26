@@ -22,6 +22,7 @@ public partial class SharedBodySystem
     {
         SubscribeLocalEvent<OrganComponent, MapInitEvent>(OnMapInit);
         SubscribeLocalEvent<OrganComponent, OrganEnableChangedEvent>(OnOrganEnableChanged);
+        SubscribeLocalEvent<OrganComponent, DamageChangedEvent>(OnDamageChanged);
     }
 
     private void OnMapInit(Entity<OrganComponent> ent, ref MapInitEvent args)

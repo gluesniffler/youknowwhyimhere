@@ -89,6 +89,7 @@ public partial class SharedBodySystem
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
+        UpdateOrgan(frameTime);
         _integrityJobQueue.Process();
 
         if (!_timing.IsFirstTimePredicted)

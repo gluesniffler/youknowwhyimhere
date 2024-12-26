@@ -1,8 +1,12 @@
 using Content.Shared.Body.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
-using Robust.Shared.Prototypes; // Shitmed Change
-using Content.Shared._Shitmed.Medical.Surgery.Tools; // Shitmed Change
+
+// Shitmed Change
+using Robust.Shared.Prototypes;
+using Content.Shared._Shitmed.Medical.Surgery.Tools;
+using Content.Shared._Shitmed.Body.BodyCapacity;
+using Content.Shared._Shitmed.Body.Organ;
 
 namespace Content.Shared.Body.Organ;
 
@@ -68,5 +72,58 @@ public sealed partial class OrganComponent : Component, ISurgeryToolComponent //
     /// </summary>
     [DataField]
     public bool CanEnable = true;
+
+    /// <summary>
+    ///     What are this organ's capacities, and for which functions do they apply?
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public OrganCapacity BaseCapacities = new();
+
+    /// <summary>
+    ///     What are this organ's current capacities? Takes into account a bunch of conditions.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public OrganCapacity CurrentCapacities = new();
+
+    /// <summary>
+    ///     What is this organ's status?
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public OrganStatus Status = OrganStatus.Healthy;
+
+    /// <summary>
+    ///     How much self healing this organ has.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public float SelfHealingAmount = 5;
+
+    /// <summary>
+    ///     Delay between updates for the organ, used for updating the organ's status, and adding damage if its failing.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public TimeSpan UpdateDelay = TimeSpan.FromSeconds(2.0);
+
+    /// <summary>
+    ///     Next update time for the organ.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public TimeSpan NextUpdate;
+
+    /// <summary>
+    ///     On what OrganStatus should we start applying negative effects?
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public OrganStatus DamagedStatus = OrganStatus.ModeratelyDamaged;
+
+    [DataField, AutoNetworkedField]
+    public Dictionary<OrganStatus, float> IntegrityThresholds = new()
+    {
+        { OrganStatus.Ruined, 90 },
+        { OrganStatus.HeavilyDamaged, 75 },
+        { OrganStatus.ModeratelyDamaged, 40},
+        { OrganStatus.LightlyDamaged, 20 },
+        { OrganStatus.Healthy, 10 },
+    };
+
     // Shitmed Change End
 }

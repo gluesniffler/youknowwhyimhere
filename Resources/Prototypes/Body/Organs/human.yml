@@ -27,6 +27,8 @@
     tags:
     - Meat
     - Organ
+  - type: Damageable
+    damageContainer: Organ
 
 - type: entity
   id: BaseHumanOrgan

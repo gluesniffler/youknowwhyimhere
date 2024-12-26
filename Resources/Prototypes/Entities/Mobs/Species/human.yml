@@ -28,6 +28,28 @@
             sprite: Mobs/Species/Human/displacement.rsi
             state: jumpsuit-female
   - type: FootPrints # WD EDIT
+  - type: BodyCapacity
+    organCapacities:
+      heart:
+        types:
+          Maximum: 100
+          Minimum: 100
+      lungs:
+        types:
+          Maximum: 100
+          Minimum: 100
+      stomach:
+        types:
+          Maximum: 100
+          Minimum: 100
+      liver:
+        types:
+          Maximum: 100
+          Minimum: 100
+      kidneys:
+        types:
+          Maximum: 100
+          Minimum: 100
 
 - type: entity
   parent: BaseSpeciesDummy
