@@ -26,6 +26,18 @@ public partial class SharedBodySystem
 
             if (organ.Status < organ.DamagedStatus)
                 _damageable.TryChangeDamage(uid, GetHealingSpecifier(organ), canSever: false);
+
+            if (organ.Status != OrganStatus.Ruined && !organ.Enabled)
+            {
+                var ev = new OrganEnabledEvent((uid, organ));
+                RaiseLocalEvent(uid, ref ev);
+            }
+
+            if (organ.Status == OrganStatus.Ruined && organ.Enabled)
+            {
+                var ev = new OrganDisabledEvent((uid, organ));
+                RaiseLocalEvent(uid, ref ev);
+            }
         }
     }
 
@@ -38,9 +50,8 @@ public partial class SharedBodySystem
         if (newStatus != component.Status)
             component.Status = newStatus;
 
-
-        if (component.CurrentCapacities != default)
-            component.CurrentCapacities = component.BaseCapacities * (100 / (int) component.Status);
+        var ev = new OrganDamageChangedEvent(args.DamageIncreased);
+        RaiseLocalEvent(entity, ev);
     }
 
     public DamageSpecifier GetHealingSpecifier(OrganComponent organ)

@@ -14,6 +14,7 @@ using Robust.Shared.Collections;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
+using Content.Shared._Shitmed.Body.Organ; // Shitmed Change
 
 namespace Content.Server.Body.Systems
 {
@@ -140,6 +141,9 @@ namespace Content.Server.Body.Systems
             {
                 return;
             }
+
+            if (HasComp<HeartAttackComponent>(solutionEntityUid.Value)) // Shitmed Change
+                return;
 
             // randomize the reagent list so we don't have any weird quirks
             // like alphabetical order or insertion order mattering for processing

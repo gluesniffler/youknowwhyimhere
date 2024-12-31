@@ -4,11 +4,12 @@ using Robust.Shared.Audio;
 using Robust.Shared.Containers;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
-
+using Content.Shared._Shitmed.Body.BodyCapacity; // Shitmed Change
+using Content.Shared._Shitmed.Body.Vascular; // Shitmed Change
 namespace Content.Shared.Body.Components;
 
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
-[Access(typeof(SharedBodySystem))]
+[Access(typeof(SharedBodySystem), typeof(VascularSystem))] // Shitmed Change
 public sealed partial class BodyComponent : Component
 {
     /// <summary>

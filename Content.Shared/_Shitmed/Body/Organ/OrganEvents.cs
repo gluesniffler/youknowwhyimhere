@@ -11,3 +11,5 @@ public readonly record struct OrganEnabledEvent(Entity<OrganComponent> Organ);
 
 [ByRefEvent]
 public readonly record struct OrganDisabledEvent(Entity<OrganComponent> Organ);
+
+public readonly record struct OrganDamageChangedEvent(bool DamageIncreased);

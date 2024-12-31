@@ -217,8 +217,11 @@
   description: "I feel bad for the heartless bastard who lost this."
   components:
   - type: Heart # Shitmed Change
+    capacity: 100
   - type: Organ # Shitmed Change
     slotId: heart # Shitmed Change
+    onRemove:
+    - type: HeartAttack
   - type: Sprite
     state: heart-on
   # The heart 'metabolizes' medicines and poisons that aren't filtered out by other organs.

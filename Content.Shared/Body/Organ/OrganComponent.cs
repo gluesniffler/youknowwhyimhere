@@ -4,6 +4,7 @@ using Robust.Shared.GameStates;
 
 // Shitmed Change
 using Robust.Shared.Prototypes;
+using Content.Shared._Shitmed.Medical.Surgery;
 using Content.Shared._Shitmed.Medical.Surgery.Tools;
 using Content.Shared._Shitmed.Body.BodyCapacity;
 using Content.Shared._Shitmed.Body.Organ;
@@ -72,18 +73,6 @@ public sealed partial class OrganComponent : Component, ISurgeryToolComponent //
     /// </summary>
     [DataField]
     public bool CanEnable = true;
-
-    /// <summary>
-    ///     What are this organ's capacities, and for which functions do they apply?
-    /// </summary>
-    [DataField, AutoNetworkedField]
-    public OrganCapacity BaseCapacities = new();
-
-    /// <summary>
-    ///     What are this organ's current capacities? Takes into account a bunch of conditions.
-    /// </summary>
-    [DataField, AutoNetworkedField]
-    public OrganCapacity CurrentCapacities = new();
 
     /// <summary>
     ///     What is this organ's status?

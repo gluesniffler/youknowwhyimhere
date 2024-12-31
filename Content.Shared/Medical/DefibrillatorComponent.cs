@@ -91,3 +91,9 @@ public sealed partial class DefibrillatorZapDoAfterEvent : SimpleDoAfterEvent
 {
 
 }
+
+[Serializable, NetSerializable]
+public sealed class DefibrillatorZapSuccessEvent : EntityEventArgs
+{
+
+}

@@ -34,6 +34,7 @@ using Content.Shared.Containers.ItemSlots;
 using Robust.Server.GameObjects;
 using Content.Shared.Whitelist;
 using Content.Shared.Destructible;
+using Content.Shared._Shitmed.Body.Vascular; // Shitmed Change
 
 namespace Content.Server.Nutrition.EntitySystems;
 
@@ -209,6 +210,9 @@ public sealed class FoodSystem : EntitySystem
             NeedHand = forceFeed || _hands.IsHolding(user, food),
         };
 
+        // Shitmed Change - Add Strain
+        var strainEv = new VascularStrainEvent(foodComp.Solution, foodSolution.Volume.Float() * 0.5f, true, TimeSpan.FromSeconds(10));
+        RaiseLocalEvent(target, strainEv);
         _doAfter.TryStartDoAfter(doAfterArgs);
         return (true, true);
     }

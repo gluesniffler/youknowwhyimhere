@@ -292,11 +292,8 @@ public partial class SharedBodySystem
             return;
 
         // I hate having to hardcode these checks so much.
-        if (HasComp<EyesComponent>(organEnt))
-        {
-            var ev = new OrganEnabledEvent(organEnt);
-            RaiseLocalEvent(organEnt, ref ev);
-        }
+        var ev = new OrganEnabledEvent(organEnt);
+        RaiseLocalEvent(organEnt, ref ev);
     }
 
     private void DisableOrgan(Entity<OrganComponent> organEnt)
@@ -305,11 +302,8 @@ public partial class SharedBodySystem
             return;
 
         // I hate having to hardcode these checks so much.
-        if (HasComp<EyesComponent>(organEnt))
-        {
-            var ev = new OrganDisabledEvent(organEnt);
-            RaiseLocalEvent(organEnt, ref ev);
-        }
+        var ev = new OrganDisabledEvent(organEnt);
+        RaiseLocalEvent(organEnt, ref ev);
     }
 
     // Shitmed Change End

@@ -215,6 +215,8 @@ public sealed class DefibrillatorSystem : EntitySystem
                 _damageable.TryChangeDamage(target, diff, true, damageable: damageableComponent, origin: uid); // Shitmed Change
                 _mobState.ChangeMobState(target, MobState.Critical, mob, uid);
                 dead = false;
+                var zapEv = new DefibrillatorZapSuccessEvent();
+                RaiseLocalEvent(uid, zapEv);
             }
 
             if (_mind.TryGetMind(target, out _, out var mind) &&
