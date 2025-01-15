@@ -1,4 +1,3 @@
-using Content.Shared.FixedPoint;
 using Content.Shared.Body.Systems;
 using Content.Shared._Shitmed.Body.Organ;
 using Content.Shared.Medical;
@@ -24,6 +23,10 @@ public sealed class VascularSystem : EntitySystem
         SubscribeLocalEvent<VascularComponent, VascularStrainEvent>(OnStrainChange);
         SubscribeLocalEvent<VascularComponent, DefibrillatorZapSuccessEvent>(OnZapSuccess);
     }
+
+    /* This system is a bit of a mess to start a Vascular simulation, 
+        any help drafting a proper one would be appreciated! Thank god I didn't become a doctor. 
+        I ain't built for these streets, cuh. */
 
     public override void Update(float frameTime)
     {
@@ -56,30 +59,33 @@ public sealed class VascularSystem : EntitySystem
             if (component.TimeUnderLow > component.FailureTime || component.TimeOverHigh > component.FailureTime)
                 isFailing = true;
 
-            if (component.CurrentStrain > component.Capacity)
+            if (!_body.TryGetBodyOrganEntityComps<HeartComponent>((uid, body), out var hearts))
             {
-                if (!_body.TryGetBodyOrganEntityComps<HeartComponent>((uid, body), out var hearts))
-                {
-                    ChangeHeartRate(uid, component, -component.HeartRate);
-                    component.Capacity = 0;
-                    continue;
-                }
+                ChangeHeartRate(uid, component, -component.HeartRate);
+                component.Capacity = 0;
+                continue;
+            }
 
-                float newCapacity = 0;
-                foreach (var (heartUid, heart, organ) in hearts)
-                {
+            float newCapacity = 0;
+            foreach (var (heartUid, heart, organ) in hearts)
+            {
+                if (component.CurrentStrain > component.Capacity)
                     _damageable.TryChangeDamage(heartUid,
                         new DamageSpecifier(_proto.Index<DamageTypePrototype>("Decay"),
                         (component.CurrentStrain - heart.CurrentCapacity) / (hearts.Count * 100)));
 
-                    if (organ.Enabled && heart.CurrentCapacity > 0)
-                        newCapacity += heart.CurrentCapacity;
-                }
+                if (organ.Enabled && heart.CurrentCapacity > 0)
+                    newCapacity += heart.CurrentCapacity;
+            }
 
-                if (newCapacity == 0)
-                    isFailing = true;
+            if (newCapacity == 0)
+                isFailing = true;
 
-                component.Capacity = newCapacity;
+            component.Capacity = newCapacity;
+
+            // TODO: Probably split this up into a cycle where we increase, then lower the heart to create a beat?
+            if (component.CurrentStrain > component.Capacity)
+            {
                 var heartRateIncrease = Math.Min(capacityUtilization * 10f, 50f);
                 ChangeHeartRate(uid, component, heartRateIncrease);
             }
@@ -106,7 +112,7 @@ public sealed class VascularSystem : EntitySystem
             || !_body.TryGetBodyOrganEntityComps<HeartComponent>((uid, body), out var hearts))
             return;
 
-        foreach (var (heartUid, heart, organ) in hearts)
+        foreach (var (_, heart, organ) in hearts)
             if (organ.Enabled && heart.CurrentCapacity > 0)
                 component.Capacity += heart.CurrentCapacity;
 

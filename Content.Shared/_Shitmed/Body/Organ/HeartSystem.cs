@@ -53,6 +53,6 @@ public sealed class HeartSystem : EntitySystem
         if (!TryComp<OrganComponent>(uid, out var organ))
             return;
 
-        component.CurrentCapacity = component.Capacity * (100 / (int) organ.Status);
+        component.CurrentCapacity = component.Capacity * (1 / (int) organ.Status);
     }
 }
