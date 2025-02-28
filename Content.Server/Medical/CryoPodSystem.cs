@@ -9,6 +9,7 @@ using Content.Server.NodeContainer.EntitySystems;
 using Content.Server.NodeContainer.NodeGroups;
 using Content.Server.NodeContainer.Nodes;
 using Content.Server.Temperature.Components;
+using Content.Shared.Actions; // Shitmed Change
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Atmos;
 using Content.Shared.Bed.Sleep; // Shitmed Change
@@ -52,6 +53,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
     [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
     [Dependency] private readonly SleepingSystem _sleepingSystem = default!;
+    [Dependency] private readonly SharedActionsSystem _actionsSystem = default!;
     public override void Initialize()
     {
         base.Initialize();
