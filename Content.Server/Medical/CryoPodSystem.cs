@@ -11,6 +11,7 @@ using Content.Server.NodeContainer.Nodes;
 using Content.Server.Temperature.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Atmos;
+using Content.Shared.Bed.Sleep; // Shitmed Change
 using Content.Shared.UserInterface;
 using Content.Shared.Chemistry;
 using Content.Shared.Chemistry.Components;
@@ -239,13 +240,25 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
             return;
         }
 
+        var insidePod = entity.Comp.BodyContainer.ContainedEntity; // Shitmed Change
+
         if (args.Powered)
         {
             EnsureComp<ActiveCryoPodComponent>(entity);
+            if (insidePod is { } patient) // Shitmed Change
+            {
+                EnsureComp<SleepingComponent>(patient);
+                EnsureComp<ForcedSleepingComponent>(patient);
+            }
         }
         else
         {
             RemComp<ActiveCryoPodComponent>(entity);
+            if (insidePod is { } patient) // Shitmed Change
+            {
+                RemComp<SleepingComponent>(patient);
+                RemComp<ForcedSleepingComponent>(patient);
+            }
             _uiSystem.CloseUi(entity.Owner, HealthAnalyzerUiKey.Key);
         }
         UpdateAppearance(entity.Owner, entity.Comp);
