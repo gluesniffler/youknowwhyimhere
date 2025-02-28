@@ -51,7 +51,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
     [Dependency] private readonly ReactiveSystem _reactiveSystem = default!;
     [Dependency] private readonly IAdminLogManager _adminLogger = default!;
     [Dependency] private readonly NodeContainerSystem _nodeContainer = default!;
-
+    [Dependency] private readonly SleepingSystem _sleepingSystem = default!;
     public override void Initialize()
     {
         base.Initialize();
@@ -245,20 +245,13 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
         if (args.Powered)
         {
             EnsureComp<ActiveCryoPodComponent>(entity);
-            if (insidePod is { } patient) // Shitmed Change
-            {
-                EnsureComp<SleepingComponent>(patient);
-                EnsureComp<ForcedSleepingComponent>(patient);
-            }
         }
         else
         {
             RemComp<ActiveCryoPodComponent>(entity);
             if (insidePod is { } patient) // Shitmed Change
-            {
-                RemComp<SleepingComponent>(patient);
-                RemComp<ForcedSleepingComponent>(patient);
-            }
+                _sleepingSystem.TryWaking(patient);
+
             _uiSystem.CloseUi(entity.Owner, HealthAnalyzerUiKey.Key);
         }
         UpdateAppearance(entity.Owner, entity.Comp);

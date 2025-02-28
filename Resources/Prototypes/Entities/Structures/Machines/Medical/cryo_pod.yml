@@ -115,3 +115,8 @@
   - type: GuideHelp
     guides:
     - Cryogenics
+  - type: HealOnBuckle # Shitmed Change
+    damage:
+      types:
+        Poison: -0.001
+        Blunt: -0.001

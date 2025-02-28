@@ -16,18 +16,11 @@ namespace Content.Server.Medical
             SubscribeLocalEvent<InsideCryoPodComponent, ExhaleLocationEvent>(OnExhaleLocation);
             SubscribeLocalEvent<InsideCryoPodComponent, AtmosExposedGetAirEvent>(OnGetAir);
         // Shitmed Change Start
-            SubscribeLocalEvent<InsideCryoPodComponent, ComponentInit>(OnComponentInit);
             SubscribeLocalEvent<InsideCryoPodComponent, ComponentRemove>(OnComponentRemove);
-        }
-        private void OnComponentInit(EntityUid uid, InsideCryoPodComponent component, ComponentInit args)
-        {
-            EnsureComp<SleepingComponent>(uid);
-            EnsureComp<ForcedSleepingComponent>(uid);
         }
         private void OnComponentRemove(EntityUid uid, InsideCryoPodComponent component, ComponentRemove args)
         {
-            RemComp<SleepingComponent>(uid);
-            RemComp<ForcedSleepingComponent>(uid);
+            _sleepingSystem.TryWaking(uid);
         }
         // Shitmed Change End
 
